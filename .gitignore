@@ -362,3 +362,7 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 provider.tf
+main.tfplan
+.terraform.lock.hcl
+terraform.tfstate.backup
+.terraform/providers/registry.terraform.io/hashicorp/azurerm/3.69.0/windows_386/terraform-provider-azurerm_v3.69.0_x5.exe
