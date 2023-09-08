@@ -25,6 +25,10 @@ resource "azurerm_linux_web_app" "WA-Cookify" {
     value = azurerm_cosmosdb_account.CDBA-Cookify.connection_strings[0]
   }
 
+  app_settings = {
+    LOGIC_APP_ENDPOINT_URL = "https://your-logic-app-url.com"
+  } 
+
   depends_on = [ azurerm_service_plan.ASP-Cookify, azurerm_cosmosdb_account.CDBA-Cookify ]
 }
 
