@@ -1,5 +1,6 @@
 ﻿@page "/recipes"
 @using System.Text;
+@using Cookify.Config;
 @using global::Shared.Models;
 @using System.Net.Http.Json;
 @inject IHttpClientFactory httpClientFactory
@@ -7,6 +8,7 @@
 @using System.Net.Http;
 @using System.Text.Json;
 @using Microsoft.AspNetCore.Components.Forms;
+@inject ConfigurationExtension Configuration
 
 
 <PageTitle>Recipes</PageTitle>
@@ -68,29 +70,22 @@
 
         var payloadJson = JsonSerializer.Serialize(payload);
 
-        try
-        {
-            using var httpClient = httpClientFactory.CreateClient();
-            var content = new StringContent(payloadJson, Encoding.UTF8, "application/json");
-            var response = await httpClient.PostAsync("YOUR_LOGIC_APP_ENDPOINT_URL", content);
+        using var httpClient = httpClientFactory.CreateClient();
+        var content = new StringContent(payloadJson, Encoding.UTF8, "application/json");
+        var response = await httpClient.PostAsync(Configuration.LogicAppEndpointUrl, content);
 
-            if (response.IsSuccessStatusCode)
-            {
-                // Handle the success case (e.g., show a success message).
-            }
-            else
-            {
-                // Handle the failure case (e.g., show an error message).
-            }
-        }
-        catch (Exception ex)
+        if (response.IsSuccessStatusCode)
         {
-            // Handle exceptions (e.g., network issues, JSON serialization error).
-            Console.WriteLine($"An error occurred: {ex.Message}");
+            // Handle the success case (e.g., show a success message).
         }
+        else
+        {
+            // Handle the failure case (e.g., show an error message).
+        }
+
     }
 
-
+    
     protected override async Task OnInitializedAsync()
     {
         var httpClient = new HttpClient();

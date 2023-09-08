@@ -1,5 +1,6 @@
 using Business.Repositories;
 using Business.Repositories.Default;
+using Cookify.Config;
 using Cookify.Data;
 using Cookify.Endpoints;
 using Cookify.Helpers;
@@ -12,6 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 string cosmosConnectionString = builder.Configuration.GetConnectionString("Database");
 string databaseName = builder.Configuration.GetSection("CosmosDBConfig")["DatabaseName"];
 string containerName = builder.Configuration.GetSection("CosmosDBConfig")["ContainerName"];
+string logicAppEndpointUrl = builder.Configuration["LOGIC_APP_ENDPOINT_URL"]; 
 
 
 // Add services to the container.
@@ -24,6 +26,14 @@ builder.Services.AddScoped<IRepository<Recipe>>(sp =>
     return new RecipeRepository(cosmosConnectionString, databaseName, containerName);
 });
 
+builder.Services.AddScoped(provider =>
+{
+    var configuration = provider.GetRequiredService<IConfiguration>();
+    return new ConfigurationExtension
+    {
+        LogicAppEndpointUrl = logicAppEndpointUrl
+    };
+});
 
 IServiceProvider serviceProvider = builder.Services.BuildServiceProvider();
 ServiceLocator.Initialize(serviceProvider);
