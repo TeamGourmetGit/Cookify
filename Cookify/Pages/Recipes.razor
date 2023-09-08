@@ -1,6 +1,8 @@
 ﻿@page "/recipes"
-@using Cookify.Data
-@inject WeatherForecastService ForecastService
+@using global::Shared.Models;
+@using System.Net.Http.Json;
+@inject IHttpClientFactory httpClientFactory
+@inject NavigationManager navigationManager
 
 <PageTitle>Recipes</PageTitle>
 
@@ -8,67 +10,48 @@
 
 <p>Select your desired recipes, and the necessary ingredients will be emailed to you.</p>
 
-@if (forecasts == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <form class="row g-3">
-        <div class="col-auto">
-            <input type="text" class="form-control" id="validationDefault01" value="email@example.com" required>
-        </div>
-        <div class="col-auto">
-            <button type="submit" class="btn btn-primary mb-3">Submit</button>
-        </div>
-    </form>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Select Recipe</th>
-                <th>Name</th>
-            </tr>
-        </thead>
-        <tbody>
+<form class="row g-3">
+    <div class="col-auto">
+        <input type="text" class="form-control" id="validationDefault01" value="email@example.com" required>
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary mb-3">Submit</button>
+    </div>
+</form>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Select Recipe</th>
+            <th>Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var recipe in recipes)
+        {
             <tr>
                 <td>
                     <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" id="customCheck1" checked>
-                        <label class="custom-control-label" for="customCheck1">1</label>
+                        <input type="checkbox" class="custom-control-input" id="customCheck@recipe.Id">
+                        <label class="custom-control-label" for="customCheck@recipe.Id">@recipe.Id</label>
                     </div>
                 </td>
-                <td>Köttfärsås</td>
-
+                <td>@recipe.Name</td>
             </tr>
-            <tr>
-                <td>
-                    <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" id="customCheck2">
-                        <label class="custom-control-label" for="customCheck2">2</label>
-                    </div>
-                </td>
-                <td>Korvstroganoff</td>
-
-            </tr>
-            <tr>
-                <td>
-                    <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" id="customCheck3">
-                        <label class="custom-control-label" for="customCheck3">3</label>
-                    </div>
-                </td>
-                <td>Köttbullar</td>
-
-            </tr>
-        </tbody>
-    </table>
-}
+        }
+    </tbody>
+</table>
 
 @code {
-    private WeatherForecast[]? forecasts;
+    private List<Recipe> recipes = new List<Recipe>();
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await ForecastService.GetForecastAsync(DateOnly.FromDateTime(DateTime.Now));
+        var httpClient = httpClientFactory.CreateClient();
+        httpClient.BaseAddress = new Uri(navigationManager.BaseUri);
+        var response = await httpClient.GetAsync("api/recipes"); // Use the appropriate API endpoint URL
+        if (response.IsSuccessStatusCode)
+        {
+            recipes = await response.Content.ReadFromJsonAsync<List<Recipe>>();
+        }
     }
 }
