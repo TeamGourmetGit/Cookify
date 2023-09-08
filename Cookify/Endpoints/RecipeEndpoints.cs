@@ -1,5 +1,6 @@
 ﻿using Business.Repositories;
 using Cookify.Helpers;
+using Microsoft.Azure.Cosmos.Serialization.HybridRow;
 using Shared.Models;
 
 namespace Cookify.Endpoints
@@ -16,6 +17,9 @@ namespace Cookify.Endpoints
         public static WebApplication MapRecipeEndpoints(this WebApplication app)
         {
             app.MapGet("/api/recipes", GetAllRecipes).WithTags("Recipes");
+            app.MapDelete("/api/recipes/{id}", DeleteRecipe).WithTags("Recipes");
+            app.MapGet("/api/recipes/{id}", GetRecipeByIdAsync).WithTags("Recipes");
+            app.MapPost("api/recipes", PostRecipe).WithTags("Recipes");
             return app;
         }
 
@@ -23,6 +27,32 @@ namespace Cookify.Endpoints
         {
             var models = await _recipeRepository.GetAllAsync(sort, filter, page, pageSize);
             return Results.Ok(models);
+        }
+
+        public static async Task<IResult> DeleteRecipe(string id)
+        {
+            var models = await _recipeRepository.DeleteAsync(id);
+            return Results.Ok(models);
+        }
+
+        public static async Task<IResult> GetRecipeByIdAsync(string id)
+        {
+            var models = await _recipeRepository.GetByIdAsync(id);
+            return Results.Ok(models);
+        }
+
+        public static async Task<IResult> PostRecipe(Recipe recipe)
+        {
+            var models = await _recipeRepository.AddAsync(recipe);
+
+            if(models != null)
+            {
+                return Results.Created($"api/recipes/{models.Id}", models);
+            }
+            else
+            {
+                return Results.BadRequest("Failed to create the recipe");
+            }
         }
     }
 }
