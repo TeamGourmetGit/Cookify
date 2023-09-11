@@ -8,7 +8,7 @@ namespace Business.Repositories
 {
     public interface IRepository<T>
     {
-        Task<T> GetByIdAsync(object id);
+        Task<T> GetByIdAsync(object id, string partitionKey);
 
         Task<IEnumerable<T>> GetAllAsync(string? sort, string? filter, int? page, int? pageSize);
 
@@ -16,6 +16,6 @@ namespace Business.Repositories
 
         Task<T> UpdateAsync(T entity);
 
-        Task<T> DeleteAsync(object id);
+        Task<T> DeleteAsync(object id, string partitionKey);
     }
 }
