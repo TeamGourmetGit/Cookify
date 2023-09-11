@@ -1,0 +1,107 @@
+﻿@page "/recipes"
+@using System.Text;
+@using Cookify.Config;
+@using global::Shared.Models;
+@using System.Net.Http.Json;
+@inject IHttpClientFactory httpClientFactory
+@inject NavigationManager navigationManager
+@using System.Net.Http;
+@using System.Text.Json;
+@using Microsoft.AspNetCore.Components.Forms;
+@inject ConfigurationExtension Configuration
+
+
+<PageTitle>Recipes</PageTitle>
+
+<h1>Recipes</h1>
+
+<p>Select your desired recipes, and the necessary ingredients will be emailed to you.</p>
+
+<form class="row g-3">
+    <div class="col-auto">
+        <input type="text" class="form-control" @bind="Email" required>
+    </div>
+    <div class="col-auto">
+        <button type="button" class="btn btn-primary mb-3" @onclick="SubmitForm">Submit</button>
+    </div>
+</form>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Select Recipe</th>
+            <th>Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var recipe in recipes)
+        {
+            <tr>
+                <td>
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" @bind="recipe.Selected" />
+
+                    </div>
+                </td>
+                <td>@recipe.Recipe.Name</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+ 
+    private string Email = "email@example.com";
+    private List<RecipeSelection> recipes = new List<RecipeSelection>();
+
+    private async Task SubmitForm()
+    {
+        var selectedRecipes = recipes.Where(r => r.Selected).Select(r => r.Recipe).ToList();
+
+        if (selectedRecipes.Count == 0)
+        {
+            return;
+        }
+
+        var payload = new
+        {
+            Email = Email,
+            SelectedRecipes = selectedRecipes
+        };
+
+        var payloadJson = JsonSerializer.Serialize(payload);
+
+        using var httpClient = httpClientFactory.CreateClient();
+        var content = new StringContent(payloadJson, Encoding.UTF8, "application/json");
+        var response = await httpClient.PostAsync(Configuration.LogicAppEndpointUrl, content);
+
+        if (response.IsSuccessStatusCode)
+        {
+            // Handle the success case (e.g., show a success message).
+        }
+        else
+        {
+            // Handle the failure case (e.g., show an error message).
+        }
+
+    }
+
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var httpClient = new HttpClient();
+        httpClient.BaseAddress = new Uri(navigationManager.BaseUri);
+
+        var response = await httpClient.GetFromJsonAsync<List<Recipe>>("api/recipes");
+
+        if (response != null)
+        {
+            recipes = response.Select(recipe => new RecipeSelection { Recipe = recipe }).ToList();
+        }
+    }
+
+    private class RecipeSelection
+    {
+        public Recipe Recipe { get; set; }
+        public bool Selected { get; set; }
+    }
+}
