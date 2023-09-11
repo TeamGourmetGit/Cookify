@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_WEB_APP: "WA-Cookify"
+  AZURE_WEB_APP: "Cookify"
 
 jobs:
   build:
