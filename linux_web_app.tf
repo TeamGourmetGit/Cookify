@@ -26,10 +26,10 @@ resource "azurerm_linux_web_app" "WA-Cookify" {
   }
 
   app_settings = {
-    LOGIC_APP_ENDPOINT_URL = "https://your-logic-app-url.com"
+    LOGIC_APP_ENDPOINT_URL = azurerm_logic_app_trigger_http_request.HttpReqSendEmail.callback_url
   } 
 
-  depends_on = [ azurerm_service_plan.ASP-Cookify, azurerm_cosmosdb_account.CDBA-Cookify ]
+  depends_on = [ azurerm_service_plan.ASP-Cookify, azurerm_cosmosdb_account.CDBA-Cookify, azurerm_logic_app_trigger_http_request.HttpReqSendEmail ]
 }
 
 
