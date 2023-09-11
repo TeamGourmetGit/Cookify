@@ -20,9 +20,9 @@ namespace Business.Repositories.Default
             return response.Resource;
         }
 
-        public async Task<Recipe> DeleteAsync(object id)
+        public async Task<Recipe> DeleteAsync(object id, string partitionKey)
         {
-            var response = await _container.DeleteItemAsync<Recipe>(id.ToString(), new PartitionKey(id.ToString()));
+            var response = await _container.DeleteItemAsync<Recipe>(id.ToString(), new PartitionKey(partitionKey));
             return response.Resource;
         }
 
@@ -60,9 +60,9 @@ namespace Business.Repositories.Default
             return results;
         }
 
-        public async Task<Recipe> GetByIdAsync(object id)
+        public async Task<Recipe> GetByIdAsync(object id, string partitionKey)
         {  
-            var response = await _container.ReadItemAsync<Recipe>(id.ToString(), new PartitionKey(id.ToString()));
+            var response = await _container.ReadItemAsync<Recipe>(id.ToString(), new PartitionKey(partitionKey));
             return response.Resource;
         }
 

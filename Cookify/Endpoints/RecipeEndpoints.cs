@@ -29,15 +29,15 @@ namespace Cookify.Endpoints
             return Results.Ok(models);
         }
 
-        public static async Task<IResult> DeleteRecipe(string id)
+        public static async Task<IResult> DeleteRecipe(string id, string partitionKey)
         {
-            var models = await _recipeRepository.DeleteAsync(id);
+            var models = await _recipeRepository.DeleteAsync(id,partitionKey);
             return Results.Ok(models);
         }
 
-        public static async Task<IResult> GetRecipeByIdAsync(string id)
+        public static async Task<IResult> GetRecipeByIdAsync(string id, string partitionKey)
         {
-            var models = await _recipeRepository.GetByIdAsync(id);
+            var models = await _recipeRepository.GetByIdAsync(id, partitionKey);
             return Results.Ok(models);
         }
 
