@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_WEB_APP: "Cookify"
+  AZURE_WEB_APP: "wa-cookify"
 
 jobs:
   build:
@@ -34,5 +34,5 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.AZURE_WEB_APP }}
-          publish-profile: ${{ secrets.AZURE_KEY }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: ./publish
