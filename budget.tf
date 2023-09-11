@@ -1,6 +1,7 @@
 resource "azurerm_monitor_action_group" "CookifyBudgetMonitor" {
   name                = "cookifybudgetmonitor"
   resource_group_name = local.RGname
+  short_name = "CBM"
   depends_on = [ azurerm_resource_group.RG-Cookify-TeamGourmet ]
 }
 
