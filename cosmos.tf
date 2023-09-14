@@ -1,5 +1,5 @@
 resource "azurerm_cosmosdb_account" "CDBA-Cookify" {
-  name                = "CDBA-Cookify"
+  name                = "cdba-cookify"
   location            = local.RGlocation
   resource_group_name = local.RGname
   offer_type          = "Standard"
